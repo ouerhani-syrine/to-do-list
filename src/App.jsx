@@ -9,9 +9,19 @@ function App() {
   const nbTotal=tache.length;
   const nbActive= tache.filter(t => !t.Completed).length;
   const nbCompleted= tache.filter(t => t.Completed).length;
-  const nbHighPriority=tache.filter(t => t.level === 'high').length;
-  const handleForm = (t) =>{setTache([...tache,t])};
-  
+  const nbHighPriority=tache.filter((t) =>{return  t.level === 'high' && !t.Completed}).length;
+  const handleForm = (t) =>{setTache([...tache,t]) ; alert(t.titre);};
+  const modifierTacheCompleted= (titre) => {
+    const nouvellestaches = tache.map((t)=>{
+      if(t.titre===titre){
+        return {...t,
+                Completed : !t.Completed
+        }
+      }
+    return t;
+    })
+  setTache(nouvellestaches);
+  }
   return <>
     <Entete src={photo}/>
     <div style={{ display: 'flex', gap: '10px' }}>
@@ -21,16 +31,27 @@ function App() {
     <NbCard symbole="!" titre="High Priority" nombre={nbHighPriority}/>
     </div>
     <Form onAddTask={handleForm}/>
-    <Tableau taches={tache}/>
+    <Tableau taches={tache} modifierTacheCompleted={modifierTacheCompleted}/>
   </>
 }
-function Tableau({taches}){
+function Tableau({taches,modifierTacheCompleted}){
   const rows=[];
   for(let t of taches){
-    rows.push(<TacheRow key={t.titre} tache={t} />)
+    rows.push(<TacheRow key={t.titre} tache={t} modifierTacheCompleted={modifierTacheCompleted} />)
   }
   return <table>
-    {rows}
+    <thead>
+      <tr><th colSpan="4">Tache</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td></td>
+        <td><b>Titre</b></td>
+        <td><b>Level</b></td>
+        <td><b>Date</b></td>
+      </tr>
+      {rows}
+    </tbody>
   </table>
 }
 export default App
