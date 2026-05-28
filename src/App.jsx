@@ -1,74 +1,51 @@
-import { useState } from 'react'
-import { Entete } from './navBar/nav'
-import photo from "./assets/images/todo.png"
-import { NbCard } from './navBar/main/nbCard'
-import { Form } from './navBar/Form/Form';
-import { TacheRow } from './navBar/TacheRow/TacheRow';
-import { useEffect } from 'react';
-import { useRef } from 'react';
-import { useMemo } from 'react';
-function App() {
-  const [tache,setTache]=useState([]);
-  const nbTotal=useMemo(() => {return tache.length;},[tache]);
-  const nbActive= useMemo(() =>tache.filter(t => !t.Completed).length , [tache]);
-  const nbCompleted=useMemo(() =>tache.filter(t => t.Completed).length, [tache]);
-  const nbHighPriority=useMemo(() =>tache.filter((t) =>{return  t.level === 'high' && !t.Completed}).length, [tache]);
-  const handleForm = (t) =>{setTache([...tache,t]);};
-  const modifierTacheCompleted= (titre) => {
-    const nouvellestaches = tache.map((t)=>{
-      if(t.titre===titre){
-        return {...t,
-                Completed : !t.Completed
-        }
-      }
-    return t;
-    })
-  setTache(nouvellestaches);
+import { createBrowserRouter, NavLink,useRouteError } from 'react-router-dom';
+import { Outlet } from "react-router-dom";
+import { RouterProvider } from 'react-router';
+import { ToDo } from './navBar/ToDo/ToDo'
+const router=createBrowserRouter([
+  {
+    path: "/",
+    element: <Root />,
+    errorElement: <PageError />,
+    children: [{
+      path: "",
+      element: <h1>Welcome</h1>
+    },
+      {
+        path :"ToDo",
+        element: (<div><ToDo /></div>)
+    },
+    {
+      path: "/about",
+      element: <div>Definition</div>
+    }
+  ]
   }
-  const premierRendu=useRef(true);
-  useEffect(() => {
-    const saved = localStorage.getItem("taches");
-    if(saved){
-      setTache(JSON.parse(saved));
-    }
-  },[])
-  useEffect(() =>{
-    if (premierRendu.current) {
-      premierRendu.current = false;
-      return; 
-    }
-      localStorage.setItem("taches",JSON.stringify(tache));
-  },[tache])
+])
+function PageError(){
+  const error=useRouteError();
   return <>
-    <Entete src={photo}/>
-    <div style={{ display: 'flex', gap: '10px' }}>
-    <NbCard symbole="-" titre="Total" nombre={nbTotal}/>
-    <NbCard symbole="°" titre="active" nombre={nbActive}/>
-    <NbCard symbole="\/" titre="Completed" nombre={nbCompleted}/>
-    <NbCard symbole="!" titre="High Priority" nombre={nbHighPriority}/>
-    </div>
-    <Form onAddTask={handleForm}/>
-    <Tableau taches={tache} modifierTacheCompleted={modifierTacheCompleted}/>
+  <h1>Page introuvable !</h1>
+  <p>
+    {error.statusText || error.message}
+  </p>
   </>
 }
-function Tableau({taches,modifierTacheCompleted}){
-  const rows=[];
-  for(let t of taches){
-    rows.push(<TacheRow key={t.titre} tache={t} modifierTacheCompleted={modifierTacheCompleted} />)
-  }
-  return <table>
-    <thead>
-      <tr><th colSpan="4">Tache</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td></td>
-        <td><b>Titre</b></td>
-        <td><b>Level</b></td>
-        <td><b>Date</b></td>
-      </tr>
-      {rows}
-    </tbody>
-  </table>
+function Root (){
+  return <>
+    <header>
+      <nav>
+        <NavLink to="/">Home</NavLink>
+        <NavLink to="/about">About</NavLink>
+        <NavLink to="/ToDo">To do</NavLink>
+      </nav>
+    </header>
+    <div className="container my-4"><Outlet /></div>
+  </>
+}
+function App() {
+  return <>
+    <RouterProvider router={router}/>
+  </>
 }
 export default App
