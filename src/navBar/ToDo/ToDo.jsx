@@ -7,6 +7,10 @@ import { useEffect } from 'react';
 import { useRef } from 'react';
 import { useMemo } from 'react';
 import { Entete } from '../../navBar/nav'
+import { useContext } from 'react';
+import { createContext } from 'react';
+export const fct = createContext();
+export const fctSup =createContext();
 export function ToDo(){
     const [tache,setTache]=useState([]);
   const nbTotal=useMemo(() => {return tache.length;},[tache]);
@@ -25,6 +29,10 @@ export function ToDo(){
     })
   setTache(nouvellestaches);
   }
+  const apresSuppression = (titre) =>{
+    const nTache = tache.filter((t)=>(t.titre !== titre));
+    setTache(nTache);
+  } 
   const premierRendu=useRef(true);
   useEffect(() => {
     const saved = localStorage.getItem("taches");
@@ -48,13 +56,17 @@ export function ToDo(){
     <NbCard symbole="!" titre="High Priority" nombre={nbHighPriority}/>
     </div>
     <Form onAddTask={handleForm}/>
-    <Tableau taches={tache} modifierTacheCompleted={modifierTacheCompleted}/>
+    <fct.Provider value={modifierTacheCompleted}>
+      <fctSup.Provider value={apresSuppression}>
+        <Tableau taches={tache}/>
+      </fctSup.Provider>
+    </fct.Provider>
   </>
 }
-function Tableau({taches,modifierTacheCompleted}){
+function Tableau({taches}){
     const rows=[];
     for(let t of taches){
-      rows.push(<TacheRow key={t.titre} tache={t} modifierTacheCompleted={modifierTacheCompleted} />)
+      rows.push(<TacheRow key={t.titre} tache={t} />)
     }
     return <table>
       <thead>
@@ -66,6 +78,7 @@ function Tableau({taches,modifierTacheCompleted}){
           <td><b>Titre</b></td>
           <td><b>Level</b></td>
           <td><b>Date</b></td>
+          <td><b>Supprimer</b></td>
         </tr>
         {rows}
       </tbody>
