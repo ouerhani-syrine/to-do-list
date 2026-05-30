@@ -34,11 +34,12 @@ function PageError(){
 function Root (){
   return <>
     <header>
-      <nav>
-        <NavLink to="/">Home</NavLink>
-        <NavLink to="/about">About</NavLink>
-        <NavLink to="/ToDo">To do</NavLink>
+      <nav className='relative bg-gray-800'>
+        <NavLink to="/" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white">Home</NavLink>
+        <NavLink to="/about" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white">About</NavLink>
+        <NavLink to="/ToDo" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white">To do</NavLink>
       </nav>
+      <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet"></link>
     </header>
     <div className="container my-4"><Outlet /></div>
   </>
