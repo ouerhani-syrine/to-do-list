@@ -11,6 +11,9 @@ import { createContext } from 'react';
 export const fct = createContext();
 export const fctSup =createContext();
 export const fctVerif=createContext();
+export const fctnom=createContext();
+export const fctdate=createContext();
+export const fctlevel=createContext();
 export function ToDo(){
   const [tache,setTache]=useState([]);
   const nbTotal=useMemo(() => {return tache.length;},[tache]);
@@ -28,6 +31,48 @@ export function ToDo(){
     return t;
     })
   setTache(nouvellestaches);
+  }
+  const modifierTacheTitre= (titre,nouveauTitre,date) =>{
+    if(verifierExistence(nouveauTitre,date)===false){
+      alert("Attention le nouveau titre existe deja !");
+      return false;
+    }
+    const nouvellestaches=tache.map((t) => {
+      if(t.titre == titre && t.date === date){
+        return {...t,
+          titre: nouveauTitre
+        }
+      }
+      return t;
+    })
+    setTache(nouvellestaches);
+    return true;
+  }
+  const modifierTacheDate= (date,nouveauDate,titre) =>{
+    if(verifierExistence(titre,nouveauDate)===false){
+      alert("Attention la nouvelle date existe deja !");
+      return ;
+    }
+    const nouvellestaches=tache.map((t) => {
+      if(t.titre == titre && t.date === date){
+        return {...t,
+          date: nouveauDate
+        }
+      }
+      return t;
+    })
+    setTache(nouvellestaches);
+  }
+  const modifierTacheLevel= (level,nouveauLevel,titre,date) =>{
+    const nouvellestaches=tache.map((t) => {
+      if(t.titre == titre && t.date === date){
+        return {...t,
+          level: nouveauLevel
+        }
+      }
+      return t;
+    })
+    setTache(nouvellestaches);
   }
   const verifierExistence = (titre,date) =>{
     const exist= tache.filter((t) => { return t.titre === titre && t.date === date} );
@@ -67,7 +112,13 @@ export function ToDo(){
     </fctVerif.Provider>
     <fct.Provider value={modifierTacheCompleted}>
       <fctSup.Provider value={apresSuppression}>
-        <Tableau taches={tache}/>
+        <fctnom.Provider value={modifierTacheTitre}>
+          <fctdate.Provider value={modifierTacheDate}>
+            <fctlevel.Provider value={modifierTacheLevel}>
+              <Tableau taches={tache}/>
+            </fctlevel.Provider> 
+          </fctdate.Provider>
+        </fctnom.Provider>
       </fctSup.Provider>
     </fct.Provider>
   </>
