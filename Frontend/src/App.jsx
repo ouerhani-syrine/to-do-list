@@ -1,7 +1,7 @@
 import { createBrowserRouter, NavLink,useRouteError } from 'react-router-dom';
 import { Outlet } from "react-router-dom";
 import { RouterProvider } from 'react-router';
-import { ToDo } from './navBar/ToDo/ToDo'
+import { ToDo } from './Component/ToDo/ToDo'
 const router=createBrowserRouter([
   {
     path: "/",
